@@ -1,23 +1,39 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { PostCard } from "../../entities/post/ui/PostCard";
 
-interface Post {
+export interface Post {
   id: number;
   title: string;
   content: string;
 }
 
-const postsMock: Post[] = [
-  { id: 1, title: "Первый пост", content: "Содержание первого поста..." },
-  { id: 2, title: "Второй пост", content: "Текст второго поста..." },
-  { id: 3, title: "Третий пост", content: "Информация из третьего поста..." },
-];
+interface PostListProps {
+  posts: Post[];
+  minTitleLength?: number;
+}
 
-export const PostList: React.FC = () => {
+export const PostList: React.FC<PostListProps> = ({
+  posts,
+  minTitleLength = 0,
+}) => {
+  const handlePostClick = useCallback((postId: number) => {
+    console.log("Клик по посту", postId);
+  }, []);
+
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post) => post.title.length >= minTitleLength);
+  }, [posts, minTitleLength]);
+
   return (
     <section>
-      {postsMock.map((post) => (
-        <PostCard key={post.id} title={post.title} content={post.content} />
+      {filteredPosts.map((post) => (
+        <React.Fragment key={post.id}>
+          <PostCard
+            title={post.title}
+            content={post.content}
+            onClick={() => handlePostClick(post.id)}
+          />
+        </React.Fragment>
       ))}
     </section>
   );
