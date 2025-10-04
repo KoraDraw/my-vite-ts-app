@@ -1,40 +1,75 @@
+import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
-import { useEffect } from "react";
-import ReactDOM from "react-dom";
+import { useTheme } from "../../lib/theme/ThemeContext";
 import "./Modal.css";
 
-interface ModalProps {
+interface ModalContextProps {
   isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
+  open: () => void;
+  close: () => void;
 }
 
-const modalRoot = document.getElementById("modal-root")!;
+const ModalContext = createContext<ModalContextProps | undefined>(undefined);
 
-export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    if (isOpen) document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [isOpen, onClose]);
+interface ModalProps {
+  children: ReactNode;
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
-  if (!isOpen) return null;
+export const Modal = ({
+  children,
+  isOpen: controlledIsOpen,
+  onClose,
+}: ModalProps) => {
+  const [isOpenInternal, setIsOpenInternal] = useState(false);
+  const isControlled = controlledIsOpen !== undefined;
+  const isOpen = isControlled ? controlledIsOpen : isOpenInternal;
 
-  return ReactDOM.createPortal(
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button
-          className="modal-close"
-          onClick={onClose}
-          aria-label="Close modal"
-        >
-          &times;
-        </button>
-        {children}
-      </div>
-    </div>,
-    modalRoot
+  const { theme } = useTheme(); // берем тему из контекста
+
+  const open = () => {
+    if (!isControlled) setIsOpenInternal(true);
+  };
+  const close = () => {
+    if (!isControlled) setIsOpenInternal(false);
+    onClose?.();
+  };
+
+  return (
+    <ModalContext.Provider value={{ isOpen, open, close }}>
+      {isOpen && (
+        <div className={`modal-overlay modal-${theme}`}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            {children}
+          </div>
+        </div>
+      )}
+    </ModalContext.Provider>
   );
+};
+
+export const ModalHeader = ({ children }: { children: ReactNode }) => {
+  const context = useContext(ModalContext);
+  if (!context) throw new Error("ModalHeader must be used within Modal");
+  return (
+    <div className="modal-header">
+      <h2>{children}</h2>
+      <button onClick={context.close} aria-label="Закрыть модальное окно">
+        ×
+      </button>
+    </div>
+  );
+};
+
+export const ModalBody = ({ children }: { children: ReactNode }) => {
+  const context = useContext(ModalContext);
+  if (!context) throw new Error("ModalBody must be used within Modal");
+  return <div className="modal-body">{children}</div>;
+};
+
+export const ModalFooter = ({ children }: { children: ReactNode }) => {
+  const context = useContext(ModalContext);
+  if (!context) throw new Error("ModalFooter must be used within Modal");
+  return <div className="modal-footer">{children}</div>;
 };
