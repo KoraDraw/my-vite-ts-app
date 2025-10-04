@@ -1,5 +1,5 @@
 .modal-overlay {
-  position: fixed; /* фиксируем поверх всего */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
@@ -7,13 +7,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10000; /* очень высокий индекс */
+  z-index: 10000;
 
-  background: rgba(0, 0, 0, 0.5); /* полупрозрачный тёмный фон по умолчанию */
+  background: rgba(0, 0, 0, 0.5);
   transition: background 0.3s ease;
 }
 
-/* Светлая тема */
 .modal-light {
   background: rgba(255, 255, 255, 0.8);
 }
@@ -29,7 +28,6 @@
   position: relative;
 }
 
-/* Заголовок модалки */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -48,12 +46,10 @@
   cursor: pointer;
 }
 
-/* Тело */
 .modal-body {
   margin-bottom: 10px;
 }
 
-/* Футер */
 .modal-footer {
   text-align: right;
 }
