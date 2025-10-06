@@ -26,7 +26,7 @@ export const Modal = ({
   const isControlled = controlledIsOpen !== undefined;
   const isOpen = isControlled ? controlledIsOpen : isOpenInternal;
 
-  const { theme } = useTheme(); // берем тему из контекста
+  const { theme } = useTheme();
 
   const open = () => {
     if (!isControlled) setIsOpenInternal(true);
