@@ -17,7 +17,9 @@ export const PostList: React.FC = () => {
   return (
     <section>
       {postsMock.map((post) => (
-        <PostCard key={post.id} title={post.title} content={post.content} />
+        <React.Fragment key={post.id}>
+          <PostCard title={post.title} content={post.content} />
+        </React.Fragment>
       ))}
     </section>
   );
