@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
+import { BrowserRouter } from "react-router-dom";
 import { MainLayout } from "../shared/layouts/MainLayout";
 import { PostList } from "../widgets/PostList/PostList";
 import type { Post } from "../widgets/PostList/PostList";
@@ -14,6 +15,8 @@ import { withLoading } from "../shared/lib/hoc/withLoading";
 import { Button } from "../shared/ui/Button/Button";
 import { PostLengthFilter } from "../features/PostLengthFilter/ui/PostLengthFilter";
 import { filterByLength } from "../features/PostLengthFilter/lib/filterByLength";
+import { AppRouter } from "../app/providers/router/AppRouter";
+import { Navbar } from "../widgets/Navbar/Navbar";
 
 const PostListWithLoading = withLoading(PostList);
 
@@ -43,30 +46,34 @@ export const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <>
-        <header style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <Button onClick={() => setIsModalOpen(true)}>О проекте</Button>
-          <ThemeSwitcher />
-          <PostLengthFilter onFilterChange={handleFilterChange} />
-        </header>
+      <BrowserRouter>
+        <>
+          <Navbar />
+          <header style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <Button onClick={() => setIsModalOpen(true)}>О проекте</Button>
+            <ThemeSwitcher />
+            <PostLengthFilter onFilterChange={handleFilterChange} />
+          </header>
 
-        <main>
-          <MainLayout>
-            <PostListWithLoading isLoading={loading} posts={filteredPosts} />
-          </MainLayout>
-        </main>
+          <main>
+            <MainLayout>
+              <AppRouter />
+              <PostListWithLoading isLoading={loading} posts={filteredPosts} />
+            </MainLayout>
+          </main>
 
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <ModalHeader>О проекте</ModalHeader>
-          <ModalBody>
-            Это приложение на React и TypeScript с поддержкой темной и светлой
-            темы, фильтрацией постов, модальным окном и HOC для загрузки.
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={() => setIsModalOpen(false)}>Закрыть</Button>
-          </ModalFooter>
-        </Modal>
-      </>
+          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <ModalHeader>О проекте</ModalHeader>
+            <ModalBody>
+              Это приложение на React и TypeScript с поддержкой темной и светлой
+              темы, фильтрацией постов, модальным окном и HOC для загрузки.
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={() => setIsModalOpen(false)}>Закрыть</Button>
+            </ModalFooter>
+          </Modal>
+        </>
+      </BrowserRouter>
     </ThemeProvider>
   );
 };
